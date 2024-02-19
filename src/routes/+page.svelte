@@ -15,7 +15,7 @@
 
         const csv = await res.text();
 
-        energyData = d3.csvParse(csv, d3.autoType)
+        energyData = d3.csvParse(csv, d3.autoType) 
 
         console.log(energyData);
 
