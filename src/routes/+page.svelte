@@ -37,7 +37,7 @@
 
     function createBubbleChart() {
         // Define SVG dimensions and margins
-        const width = 900;
+        const width = 1000;
         const height = 800;
         const margin = { top: 50, right: 50, bottom: 70, left: 70 };
 
@@ -63,7 +63,7 @@
                               .domain([0, d3.max(emissionData, d => d["Waste Bag Weekly Count"])])
                               .range([1, 20]); // Adjust as needed
 
-        const categories = Array.from(new Set(emissionData.map(d => d["Diet"])));
+        const categories = Array.from(new Set(emissionData.map(d => d["How Often Shower"])));
         //console.log(categories);
 
         const colorScale = d3.scaleOrdinal()
@@ -78,7 +78,7 @@
            .attr("cx", d => xScale(d["Vehicle Monthly Distance Km"]))
            .attr("cy", d => yScale(d.CarbonEmission))
            .attr("r", d => radiusScale(d["Waste Bag Weekly Count"]))
-           .attr("fill", d => colorScale(d["Diet"]))
+           .attr("fill", d => colorScale(d["How Often Shower"]))
            .attr("opacity", 0.7);
         
 
@@ -153,7 +153,7 @@
         function updateVisualization(event, category) {
             const selectedCategory = category === "Unknown" ? null : category;
             circles.attr("display", function(d) {
-                return d["Diet"] === selectedCategory ? "block" : "none";
+                return d["How Often Shower"] === selectedCategory ? "block" : "none";
             });
         }
         
