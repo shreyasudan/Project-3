@@ -52,7 +52,7 @@
 
         // Create linear scales for x and y axes
         const xScale = d3.scaleLinear()
-                         .domain([0, maxX + 1000])
+                         .domain([-500, maxX + 1000])
                          .range([margin.left, width - margin.right]);
 
         const yScale = d3.scaleLinear()
@@ -61,9 +61,9 @@
 
         const radiusScale = d3.scaleSqrt()
                               .domain([0, d3.max(emissionData, d => d["Waste Bag Weekly Count"])])
-                              .range([1, 10]); // Adjust as needed
+                              .range([1, 20]); // Adjust as needed
 
-        const categories = Array.from(new Set(emissionData.map(d => d["Vehicle Type"])));
+        const categories = Array.from(new Set(emissionData.map(d => d["Diet"])));
         //console.log(categories);
 
         const colorScale = d3.scaleOrdinal()
@@ -78,14 +78,14 @@
            .attr("cx", d => xScale(d["Vehicle Monthly Distance Km"]))
            .attr("cy", d => yScale(d.CarbonEmission))
            .attr("r", d => radiusScale(d["Waste Bag Weekly Count"]))
-           .attr("fill", d => colorScale(d["Vehicle Type"]))
+           .attr("fill", d => colorScale(d["Diet"]))
            .attr("opacity", 0.7);
         
 
         // Add labels for x and y axes
         svg.append("g")
            .attr("transform", `translate(0, ${height - margin.bottom})`)
-           .call(d3.axisBottom(xScale));
+           .call(d3.axisBottom(xScale).tickValues(d3.range(0, maxX + 600, 500)));
 
 
         svg.append("g")
@@ -128,7 +128,7 @@
             .attr("y", 9)
             .attr("dy", ".35em")
             .style("text-anchor", "end")
-            .text(function(d) { return d === null ? "Unknown" : d; });
+            .text(function(d) { return capitalizeFirstLetter(d === null ? "Unknown" : d); });
 
         // Add tooltip
         const tooltip = d3.select("body").append("div")
@@ -153,8 +153,16 @@
         function updateVisualization(event, category) {
             const selectedCategory = category === "Unknown" ? null : category;
             circles.attr("display", function(d) {
-                return d["Vehicle Type"] === selectedCategory ? "block" : "none";
+                return d["Diet"] === selectedCategory ? "block" : "none";
             });
+        }
+        
+        function resetVisualization() {
+            d3.selectAll("circle").attr("display", "block");
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
     }
 
