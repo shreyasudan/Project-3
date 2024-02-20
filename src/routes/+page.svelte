@@ -1,6 +1,7 @@
 <h1>Welcome to SvelteKit!!</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
+
 <script>
 
     import * as d3 from 'd3';
@@ -62,21 +63,30 @@
                               .domain([0, d3.max(emissionData, d => d["Waste Bag Weekly Count"])])
                               .range([1, 10]); // Adjust as needed
 
+        const categories = Array.from(new Set(emissionData.map(d => d["Vehicle Type"])));
+        //console.log(categories);
+
+        const colorScale = d3.scaleOrdinal()
+                         .domain(categories)
+                         .range(["#F8B195", "#F67280", "#C06C84", "#6C5B7B", "#355C7D", "#2F9599"]);
+
         // Add circles for each data point
-        svg.selectAll("circle")
+        const circles = svg.selectAll("circle")
            .data(emissionData)
            .enter()
            .append("circle")
            .attr("cx", d => xScale(d["Vehicle Monthly Distance Km"]))
            .attr("cy", d => yScale(d.CarbonEmission))
            .attr("r", d => radiusScale(d["Waste Bag Weekly Count"]))
-           .attr("fill", "steelblue")
+           .attr("fill", d => colorScale(d["Vehicle Type"]))
            .attr("opacity", 0.7);
+        
 
         // Add labels for x and y axes
         svg.append("g")
            .attr("transform", `translate(0, ${height - margin.bottom})`)
            .call(d3.axisBottom(xScale));
+
 
         svg.append("g")
            .attr("transform", `translate(${margin.left}, 0)`)
@@ -97,6 +107,29 @@
            .attr("x", -margin.top)
            .text("Carbon Emission");
 
+        const legend = svg.selectAll(".legend")
+            .data(categories)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
+            .on("mouseover", function(event, d) { updateVisualization(event, d); })
+            .on("click", function(event, d) { updateVisualization(event, d); });
+
+        // Add colored rectangles to legend
+        legend.append("rect")
+            .attr("x", width - margin.right - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", function(d) { return d === null ? "gray" : colorScale(d); });
+
+        // Add text to legend
+        legend.append("text")
+            .attr("x", width - margin.right - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) { return d === null ? "Unknown" : d; });
+
         // Add tooltip
         const tooltip = d3.select("body").append("div")
                           .attr("class", "tooltip")
@@ -116,7 +149,16 @@
                       .duration(500)
                       .style("opacity", 0);
            });
+
+        function updateVisualization(event, category) {
+            const selectedCategory = category === "Unknown" ? null : category;
+            circles.attr("display", function(d) {
+                return d["Vehicle Type"] === selectedCategory ? "block" : "none";
+            });
+        }
     }
+
+    
 </script>
 
 <svg style="display:block;margin:auto;"></svg>
