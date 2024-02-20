@@ -120,7 +120,7 @@
             .attr("x", width - margin.right - 18)
             .attr("width", 18)
             .attr("height", 18)
-            .style("fill", colorscale);
+            .style("fill", colorScale);
 
         // Add text to legend
         legend.append("text")
