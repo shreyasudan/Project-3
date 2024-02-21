@@ -52,7 +52,7 @@
 
         emissionData = d3.csvParse(csv, d3.autoType)
 
-        $: console.log(emissionData);
+        // $: console.log(emissionData);
         createBubbleChart();
 
     });
